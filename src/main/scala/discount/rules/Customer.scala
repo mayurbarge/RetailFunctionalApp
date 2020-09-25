@@ -1,8 +1,9 @@
 package discount.rules
 
 import discount.rules.Money.Amount
-import scalaz.Scalaz._
 import scalaz._
+import scalaz.Scalaz._
+import scalaz.syntax.MonoidOps
 
 trait Type {}
 case object Regular extends Type
@@ -34,31 +35,31 @@ case class Money[C <: Currency](amount: Amount)(implicit currency: C) {
   override def toString: String = s"${currency.symbol} $amount"
 }
 
-object Money {
+object Money extends App {
   type Amount = BigDecimal
 
- /* implicit object AmountMonoid extends Monoid[Amount] {
-    override def zero: Amount = BigDecimal(0)
-    override def append(first: Amount, second: => Amount): Amount = first + second
+  class MoneyMonoid[T<:Currency](implicit currency: T) extends Monoid[Money[T]] {
+    override def zero = Money[T](BigDecimal(0))
+    override def append(f1: Money[T], f2: => Money[T]): Money[T] = Money[T](f1.amount + f2.amount)
   }
+  import Currency._
+  implicit def usdMonoid = new MoneyMonoid[USD]()(Currency.usd)
 
-  implicit object AmountOrdering extends Order[Amount] {
-    override def order(first: Amount, second: Amount): Ordering = first ?|? second
+  /*class monoid[C:Money]()(implicit currency: C) {
+        type T = C
+        val monoid = Monoid.instance((a:Money[T], b: Money[T]) => Money[C](BigDecimal(10)), Money[C](BigDecimal(0))
+    )
   }*/
 
-  trait MoneyOps[F] {
-    val F: Money[_] = Money[USD](BigDecimal(0))
-    def plus(first: F, second: F): F
+  /*implicit class MoneyOps[C:Money](implicit currency:C) extends Monoid[Money[C]] {
+    type T = C
+    override def zero: Money[C] = Money[T](BigDecimal(0))
+    override def append(f1: Money[C], f2: => Money[C]): Money[C] = Money[T](f1.amount + f2.amount)
   }
 
-  implicit object USDOps extends MoneyOps[Money[USD]] {
-    override val F: Money[USD] = Money[USD](BigDecimal(0))
-    implicit override def plus(first: Money[USD], second: Money[USD]): Money[USD] = Money(first.amount + second.amount)
-  }
+  implicit def toMonoidOp[A: Money](a: A)(implicit currency:A) = new MoneyOps[A]*/
+  import Currency._
 }
 
 
 
-case class Rule[T <: Regular.type]() {
-
-}
