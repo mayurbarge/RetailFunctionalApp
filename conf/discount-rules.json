@@ -1,0 +1,11 @@
+{
+  "slab-rules-1" : [
+    {
+      "from" : 0,
+      "to" : 5000,
+      "discount": 0,
+    }
+  ]
+  ,
+  "slab-rules-2" : {}
+}
