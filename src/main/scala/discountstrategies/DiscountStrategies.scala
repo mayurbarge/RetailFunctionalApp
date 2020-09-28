@@ -1,7 +1,7 @@
 package discountstrategies
 
 import currency.Money.Amount
-import customer.{Customer, CustomerType, Premium, Regular}
+import customer.{CustomerType, Premium, Regular}
 import discount.{AmountRange, PercentageDiscount}
 
 trait DiscountStrategy {
@@ -12,11 +12,9 @@ trait DiscountStrategies[T <: CustomerType] {
   def strategies: List[DiscountStrategy]
 }
 case class DefaultDiscountStrategy(amountRange: AmountRange, discount: PercentageDiscount) extends DiscountStrategy {
-  override def run[A](amount: Amount) = amountRange match {
+  override def run[A](amount: Amount): Amount = amountRange match {
     case AmountRange(start, None) if start < amount => (amount-start)*discount.rate
     case AmountRange(start, Some(end)) if start < amount && end <= amount => {
-      println("########")
-      println(amountRange + " " + discount + " " + amount)
       (end-start)*discount.rate
     }
     case _=> 0
@@ -45,17 +43,4 @@ object DiscountStrategies {
       DefaultDiscountStrategy(amountRange, discount)
     })
   }
-
-  trait CustomerDiscounts[T <: CustomerType] {
-    val discountStrategies: DiscountStrategies[T]
-  }
-  object CustomerDiscounts {
-    implicit class PremiumDiscounts(implicit customer: Customer[Premium]) extends CustomerDiscounts[Premium] {
-      override val discountStrategies: DiscountStrategies[Premium] = premiumDiscountStrategies
-    }
-    implicit class RegularDiscounts(customer: Customer[Regular]) extends CustomerDiscounts[Regular] {
-      override val discountStrategies: DiscountStrategies[Regular] = regularDiscountStrategies
-    }
-  }
-
 }

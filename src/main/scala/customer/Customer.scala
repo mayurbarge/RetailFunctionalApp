@@ -1,11 +1,19 @@
 package customer
 
+import currency.{Currency, Money}
+import currency.Money.Amount
+import discount.DiscountCalculator
+
 import scala.math.BigDecimal
 
 trait CustomerType {}
 case class Regular() extends CustomerType
 case class Premium() extends CustomerType
 
-case class ShoppingCart(cartTotal: BigDecimal)
+trait Cart[C <: Currency] {
+  def purchaseAmount: Money[C]
+}
+case class UnbilledShoppingCart[T <: Currency](purchaseAmount: Money[T]) extends Cart[T]
+case class BilledShoppingCart[T <: Currency](purchaseAmount: Money[T], billAmount: Money[T]) extends Cart[T]
 
-case class Customer[T <: CustomerType](cart:ShoppingCart)
+case class Customer[T <: CustomerType, C <: Currency](cart:Cart[C])

@@ -1,17 +1,17 @@
 package discount
 
-import customer.{Customer, CustomerType, Premium}
+import currency.{Currency, Money}
+import currency.Money._
+import customer.{BilledShoppingCart, Customer, CustomerType}
+import scalaz.Scalaz._
+import scalaz.Scalaz._
+import scalaz.syntax.MonoidOps
 
 object DiscountCalculator {
-  def calculate[T <: CustomerType](customer: Customer[T]) = {
-    import discountstrategies.DiscountStrategies._
-    import discountstrategies.DiscountStrategies.CustomerDiscounts._
-
-    /*customerDiscounts(customer).strategies.map(_.run(customer.cart.cartTotal)).foldLeft(BigDecimal(0))((acc, e) => {
-    //  println(e)
+  def calculate[T <: CustomerType, C <: Currency](customer: Customer[T, C])(implicit d: CustomerDiscounts[T], currency: C) = {
+    val discount = implicitly[CustomerDiscounts[T]].discountStrategies.strategies.map(_.run(customer.cart.purchaseAmount.value)).foldLeft(BigDecimal(0))((acc, e) => {
       acc + e
     })
-  }*/
-    CustomerDiscounts[Customer[Premium]].
-
+    customer.copy(BilledShoppingCart(customer.cart.purchaseAmount, Money[C](customer.cart.purchaseAmount.value - discount)))
+  }
 }

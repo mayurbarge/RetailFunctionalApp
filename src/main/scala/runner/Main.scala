@@ -1,13 +1,11 @@
 package runner
 
-import customer.{Customer, Premium, ShoppingCart}
+import currency.{Money, USD}
+import customer.{Customer, Premium, Regular, UnbilledShoppingCart}
 import discount.DiscountCalculator
+import currency.Money._
 
 object Main extends App {
-
-  val d = DiscountCalculator.calculate(Customer[Premium](ShoppingCart(BigDecimal(4000))))
- // val e = DiscountCalculator.calculate(Customer[Premium.type](ShoppingCart(BigDecimal(20000))))
+  val d = DiscountCalculator.calculate(Customer[Regular,USD](UnbilledShoppingCart(Money[USD](BigDecimal(15000)))))
   println(d)
- // println(e)
-
 }
