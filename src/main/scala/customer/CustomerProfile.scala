@@ -16,4 +16,4 @@ trait Cart[C <: Currency] {
 case class UnbilledShoppingCart[T <: Currency](purchaseAmount: Money[T]) extends Cart[T]
 case class BilledShoppingCart[T <: Currency](purchaseAmount: Money[T], billAmount: Money[T]) extends Cart[T]
 
-case class Customer[T <: CustomerType, C <: Currency](cart:Cart[C])
+case class CustomerProfile[T <: CustomerType, C <: Currency](cart:Cart[C])

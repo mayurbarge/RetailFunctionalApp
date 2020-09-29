@@ -31,7 +31,7 @@ object Money {
   class MoneyMonoid[T<:Currency](implicit currency: T) extends Monoid[Money[T]] {
     override def zero: Money[T] = Money[T](BigDecimal(0))
     override def append(f1: Money[T], f2: => Money[T]): Money[T] = Money[T](f1.value + f2.value)
-    def minus(f1: Money[T], f2: => Money[T]): Money[T] = Money[T](f1.value - f2.value)
   }
+
   implicit def usdMonoid = new MoneyMonoid[USD]()(Currency.usd)
 }
